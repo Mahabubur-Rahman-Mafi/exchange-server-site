@@ -1,9 +1,9 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require("mongodb");
 const cors = require("cors");
 require("dotenv").config();
+const { MongoClient, ServerApiVersion } = require("mongodb");
 
 // middleware
 app.use(cors());
@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
   res.send("exchange server working");
 });
 
-const uri = `mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.6cfnsid.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6cfnsid.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -24,10 +24,26 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const productsCollection = client.db("exchange").collection("products");
-
+    const categoriesCollection = client.db("exchange").collection("categories");
+    // service
+    app.get("/categories", async (req, res) => {
+      const query = {};
+      const result = await categoriesCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.get("/product/category/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { categoryName: id };
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
+    });
     
-  }
-  finally {
+        app.get("/products", async (req, res) => {
+          const query = {};
+          const result = await productsCollection.find(query).toArray();
+          res.send(result);
+        });
+  } finally {
   }
 }
 
