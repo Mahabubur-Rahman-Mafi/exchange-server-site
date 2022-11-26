@@ -15,18 +15,19 @@ app.get("/", (req, res) => {
 });
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.6cfnsid.mongodb.net/?retryWrites=true&w=majority`;
+// console.log(uri);
 const client = new MongoClient(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
 
-
 async function run() {
   try {
     const productsCollection = client.db("exchange").collection("products");
     const categoriesCollection = client.db("exchange").collection("categories");
     const usersCollection = client.db("exchange").collection("users");
+    const ordersCollection = client.db("exchange").collection("orders");
 
     // category
     app.get("/categories", async (req, res) => {
@@ -52,39 +53,47 @@ async function run() {
       res.send(result);
     });
 
-
     //   user collection
-        app.post("/users", async (req, res) => {
-          const people = req.body;
-            const result = await usersCollection.insertOne(people);
-          res.send(result);
-        });
-      app.get('/users', async (req, res) => {
-          const query = {}
-          const result = await usersCollection.find(query).toArray()
-          res.send(result)
-      })
-      app.get("/users/buyer/:email", async (req, res) => {
-        const email = req.params.email;
-        const query = { email };
-        const user = await usersCollection.findOne(query);
-        res.send({ isBuyer: user?.role === "buyer" });
-      });
-      app.get("/users/seller/:email", async (req, res) => {
-        const email = req.params.email;
-        const query = { email };
-        const user = await usersCollection.findOne(query);
-        res.send({ isSeller: user?.role === "buyer" });
-      });
-      app.get("/users/admin/:email", async (req, res) => {
-        const email = req.params.email;
-        const query = { email };
-        const user = await usersCollection.findOne(query);
-        res.send({ isAdmin: user?.role === "buyer" });
-      });
-  }
+    app.post("/users", async (req, res) => {
+      const people = req.body;
+      const result = await usersCollection.insertOne(people);
+      res.send(result);
+    });
+    app.get("/users", async (req, res) => {
+      const query = {};
+      const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
 
-  finally {
+    //   order collection
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      console.log(order);
+      const result = await ordersCollection.interOne(order);
+      res.send(result);
+    });
+
+    //    admin, seller, buyer
+    app.get("/users/buyer/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollection.findOne(query);
+      res.send({ isBuyer: user?.role === "buyer" });
+    });
+    app.get("/users/seller/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollection.findOne(query);
+      res.send({ isSeller: user?.role === "seller" });
+    });
+    app.get("/users/admin/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollection.findOne(query);
+      console.log({ isAdmin: user?.role === "admin" });
+      res.send({ isAdmin: user?.role === "admin" });
+    });
+  } finally {
   }
 }
 
