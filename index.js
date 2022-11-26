@@ -21,10 +21,12 @@ const client = new MongoClient(uri, {
   serverApi: ServerApiVersion.v1,
 });
 
+
 async function run() {
   try {
     const productsCollection = client.db("exchange").collection("products");
     const categoriesCollection = client.db("exchange").collection("categories");
+    const usersCollection = client.db("exchange").collection("users");
 
     // category
     app.get("/categories", async (req, res) => {
@@ -40,7 +42,7 @@ async function run() {
     });
     app.get("/category/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: ObjectId(id) };
+      const query = { categoryName: id };
       const result = await productsCollection.find(query).toArray();
       res.send(result);
     });
@@ -49,7 +51,40 @@ async function run() {
       const result = await productsCollection.find(query).toArray();
       res.send(result);
     });
-  } finally {
+
+
+    //   user collection
+        app.post("/users", async (req, res) => {
+          const people = req.body;
+            const result = await usersCollection.insertOne(people);
+          res.send(result);
+        });
+      app.get('/users', async (req, res) => {
+          const query = {}
+          const result = await usersCollection.find(query).toArray()
+          res.send(result)
+      })
+      app.get("/users/buyer/:email", async (req, res) => {
+        const email = req.params.email;
+        const query = { email };
+        const user = await usersCollection.findOne(query);
+        res.send({ isBuyer: user?.role === "buyer" });
+      });
+      app.get("/users/seller/:email", async (req, res) => {
+        const email = req.params.email;
+        const query = { email };
+        const user = await usersCollection.findOne(query);
+        res.send({ isSeller: user?.role === "buyer" });
+      });
+      app.get("/users/admin/:email", async (req, res) => {
+        const email = req.params.email;
+        const query = { email };
+        const user = await usersCollection.findOne(query);
+        res.send({ isAdmin: user?.role === "buyer" });
+      });
+  }
+
+  finally {
   }
 }
 
