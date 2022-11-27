@@ -32,11 +32,6 @@ async function run() {
 
 
     // category
-    app.post("/categories", async (req, res) => {
-      const category = req.body;
-      const result = await categoriesCollection.insertOne(category);
-      res.send(result);
-    });
     app.get("/categories", async (req, res) => {
       const query = {};
       const result = await categoriesCollection.find(query).toArray();
