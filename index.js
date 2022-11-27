@@ -29,7 +29,14 @@ async function run() {
     const usersCollection = client.db("exchange").collection("users");
     const ordersCollection = client.db("exchange").collection("orders");
 
+
+
     // category
+    app.post("/categories", async (req, res) => {
+      const category = req.body;
+      const result = await categoriesCollection.insertOne(category);
+      res.send(result);
+    });
     app.get("/categories", async (req, res) => {
       const query = {};
       const result = await categoriesCollection.find(query).toArray();
@@ -52,6 +59,26 @@ async function run() {
       const result = await productsCollection.find(query).toArray();
       res.send(result);
     });
+    app.get("/products/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.post('/products', async (req, res) => {
+      const product = req.body
+      const result = await productsCollection.insertOne(product)
+      res.send(result)
+    })
+    app.delete('/products/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(query);
+      res.send(result);
+    })
+    // _______
+
+
 
     //   user collection
     app.post("/users", async (req, res) => {
@@ -64,6 +91,9 @@ async function run() {
       const result = await usersCollection.find(query).toArray();
       res.send(result);
     });
+    // -------------
+
+
 
     //   order collection
     app.post('/orders', async (req, res) => {
@@ -84,6 +114,9 @@ async function run() {
        const result = await ordersCollection.deleteOne(query);
        res.send(result);
      });
+    // ------------
+
+
 
     //    admin, seller, buyer
     app.get("/users/buyer/:email", async (req, res) => {
@@ -102,11 +135,9 @@ async function run() {
       const email = req.params.email;
       const query = { email };
       const user = await usersCollection.findOne(query);
-      console.log({ isAdmin: user?.role === "admin" });
       res.send({ isAdmin: user?.role === "admin" });
     });
   }
-  
   finally {
   }
 }
