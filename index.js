@@ -66,12 +66,24 @@ async function run() {
     });
 
     //   order collection
-    app.post("/orders", async (req, res) => {
-      const order = req.body;
-      console.log(order);
-      const result = await ordersCollection.interOne(order);
-      res.send(result);
-    });
+    app.post('/orders', async (req, res) => {
+      const order = req.body
+      const result = await ordersCollection.insertOne(order)
+      res.send(result)
+    })
+    app.get('/orders/:email', async(req, res) => {
+      const email = req.params.email;
+      const query = { email }
+      const result = await ordersCollection.find(query).toArray()
+      res.send(result)
+    })
+    // delete orders
+     app.delete("/orders/:id", async (req, res) => {
+       const id = req.params.id;
+       const query = { _id: ObjectId(id) };
+       const result = await ordersCollection.deleteOne(query);
+       res.send(result);
+     });
 
     //    admin, seller, buyer
     app.get("/users/buyer/:email", async (req, res) => {
@@ -93,7 +105,9 @@ async function run() {
       console.log({ isAdmin: user?.role === "admin" });
       res.send({ isAdmin: user?.role === "admin" });
     });
-  } finally {
+  }
+  
+  finally {
   }
 }
 
