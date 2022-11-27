@@ -76,6 +76,33 @@ async function run() {
       const result = await productsCollection.deleteOne(query);
       res.send(result);
     })
+
+    app.patch("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const editText = req.body;
+      console.log(editText);
+      const option = { upsert: true };
+      const updatetext = {
+        $set: {
+          advertise: editText.text,
+        },
+      };
+      const result = await productsCollection.updateOne(
+        query,
+        updatetext,
+        option
+      );
+      res.send(result);
+    });
+    // --------
+
+    // advertise section
+    app.get('/adversite', async(req, res) => {
+      const query = { advertise: "advertised" }
+      const result = await productsCollection.find(query).toArray()
+      res.send(result)
+    })
     // _______
 
 
@@ -89,6 +116,48 @@ async function run() {
     app.get("/users", async (req, res) => {
       const query = {};
       const result = await usersCollection.find(query).toArray();
+      res.send(result);
+    });
+    app.patch("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const editText = req.body;
+      console.log(editText);
+      const option = { upsert: true };
+      const newUser = {
+        $set: {
+          status: editText.text,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        query,
+        newUser,
+        option
+      );
+      res.send(result);
+    });
+    app.put("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const editText = req.body;
+      console.log(editText);
+      const option = { upsert: true };
+      const newAdmin = {
+        $set: {
+          role: editText.text,
+        },
+      };
+      const result = await usersCollection.updateOne(
+        query,
+        newAdmin,
+        option
+      );
+      res.send(result);
+    });
+    app.delete("/users/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await usersCollection.deleteOne(query);
       res.send(result);
     });
     // -------------
