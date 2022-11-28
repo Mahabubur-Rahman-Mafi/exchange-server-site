@@ -29,8 +29,6 @@ async function run() {
     const usersCollection = client.db("exchange").collection("users");
     const ordersCollection = client.db("exchange").collection("orders");
 
-
-
     // category
     app.get("/categories", async (req, res) => {
       const query = {};
@@ -49,6 +47,9 @@ async function run() {
       const result = await productsCollection.find(query).toArray();
       res.send(result);
     });
+    // --------------
+
+    // product
     app.get("/products", async (req, res) => {
       const query = {};
       const result = await productsCollection.find(query).toArray();
@@ -60,17 +61,17 @@ async function run() {
       const result = await productsCollection.find(query).toArray();
       res.send(result);
     });
-    app.post('/products', async (req, res) => {
-      const product = req.body
-      const result = await productsCollection.insertOne(product)
-      res.send(result)
-    })
-    app.delete('/products/:id', async (req, res) => {
+    app.post("/products", async (req, res) => {
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+    app.delete("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await productsCollection.deleteOne(query);
       res.send(result);
-    })
+    });
 
     app.patch("/products/:id", async (req, res) => {
       const id = req.params.id;
@@ -93,14 +94,12 @@ async function run() {
     // --------
 
     // advertise section
-    app.get('/adversite', async(req, res) => {
-      const query = { advertise: "advertised" }
-      const result = await productsCollection.find(query).toArray()
-      res.send(result)
-    })
+    app.get("/adversite", async (req, res) => {
+      const query = { advertise: "advertised" };
+      const result = await productsCollection.find(query).toArray();
+      res.send(result);
+    });
     // _______
-
-
 
     //   user collection
     app.post("/users", async (req, res) => {
@@ -124,11 +123,7 @@ async function run() {
           status: editText.text,
         },
       };
-      const result = await usersCollection.updateOne(
-        query,
-        newUser,
-        option
-      );
+      const result = await usersCollection.updateOne(query, newUser, option);
       res.send(result);
     });
     app.put("/users/:id", async (req, res) => {
@@ -142,11 +137,7 @@ async function run() {
           role: editText.text,
         },
       };
-      const result = await usersCollection.updateOne(
-        query,
-        newAdmin,
-        option
-      );
+      const result = await usersCollection.updateOne(query, newAdmin, option);
       res.send(result);
     });
     app.delete("/users/:id", async (req, res) => {
@@ -157,30 +148,26 @@ async function run() {
     });
     // -------------
 
-
-
     //   order collection
-    app.post('/orders', async (req, res) => {
-      const order = req.body
-      const result = await ordersCollection.insertOne(order)
-      res.send(result)
-    })
-    app.get('/orders/:email', async(req, res) => {
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await ordersCollection.insertOne(order);
+      res.send(result);
+    });
+    app.get("/orders/:email", async (req, res) => {
       const email = req.params.email;
-      const query = { email }
-      const result = await ordersCollection.find(query).toArray()
-      res.send(result)
-    })
+      const query = { email };
+      const result = await ordersCollection.find(query).toArray();
+      res.send(result);
+    });
     // delete orders
-     app.delete("/orders/:id", async (req, res) => {
-       const id = req.params.id;
-       const query = { _id: ObjectId(id) };
-       const result = await ordersCollection.deleteOne(query);
-       res.send(result);
-     });
+    app.delete("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(query);
+      res.send(result);
+    });
     // ------------
-
-
 
     //    admin, seller, buyer
     app.get("/users/buyer/:email", async (req, res) => {
@@ -201,8 +188,7 @@ async function run() {
       const user = await usersCollection.findOne(query);
       res.send({ isAdmin: user?.role === "admin" });
     });
-  }
-  finally {
+  } finally {
   }
 }
 
